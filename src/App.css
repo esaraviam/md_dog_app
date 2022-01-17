@@ -1,0 +1,13 @@
+.App {
+  text-align: center;
+}
+
+.image {
+  width: 150px;
+  height: 150px;
+  margin: 5px;
+  padding: 5px;
+  border: 2px solid rgb(4, 61, 128);
+  border-radius: 50%;
+}
+
