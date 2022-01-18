@@ -1,57 +1,51 @@
 import { useState, useEffect } from "react";
+import { DogCard } from "./DogCard";
 import "./App.css";
 
 function App() {
   const [dogBreads, setDogBreads] = useState([]);
-  const [breadListImages, setBreadListImages] = useState([]);
-  const [loading, setLoading] = useState(false);
-  async function loadArrayImages(breeds) {
-    let proms = breeds.map(async (breed) => {
-      const response = await fetch(
-        `https://dog.ceo/api/breed/${breed}/images/random`
-      );
-      const data = await response.json();
-      const image = data.message;
-      return image;
-    });
-    const images = await Promise.all(proms);
-    return images;
-  }
+  const [search , setSearch] = useState("");
+  const [filteredBreeds , setFilteredBreeds] = useState([]);
 
-  async function getDogImages(breeds) {
-    const breadsImagesArray = await loadArrayImages(breeds);
-    setBreadListImages(breadsImagesArray);
-  }
+  const handleChange = (e) => {
+    setSearch(e.target.value);
+    handleSearch(e.target.value);
+  };
+
+  const handleSearch = (dogBreed) => {
+const filtered = dogBreads.filter((breed) => {
+      return breed.toLowerCase().includes(dogBreed.toLowerCase());
+    })
+    
+    setFilteredBreeds(filtered);
+  };
+
 
   const getAllBreads = async () => {
     const response = await fetch("https://dog.ceo/api/breeds/list/all");
     const data = await response.json();
-
     const breeds = Object.keys(data.message);
     setDogBreads(breeds);
+    setFilteredBreeds(breeds);
   };
 
   useEffect(() => {
     getAllBreads();
   }, []);
-  useEffect(() => {
-    setLoading(true);
-    getDogImages(dogBreads);
-    setLoading(false);
-  }, [dogBreads]);
+
+
 
   return (
     <div className="App">
-      {loading ? <h1>Loading...</h1> : null}
-      <div className="bread-list">
-        {breadListImages.map((bread, i) => (
-          <img className="image" key={i} src={bread} alt={bread} />
+      
+      <input type="text" value={search} onChange={handleChange}  placeholder="Search for a dog breed" />
+      <div className="breed-list">
+        {filteredBreeds && filteredBreeds.map((breed, i) => (
+          <DogCard key={i} dogBreed={breed} />
         ))}
       </div>
     </div>
   );
-
-
 }
 
 export default App;
